@@ -34,7 +34,7 @@ class LoginController extends ApiController
         $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
         return $this->json([
             'message' => 'success!',
-            'token' => sprintf('Bearer %s', $jwt),
+            'token' => $jwt,
         ]);
     }
 }

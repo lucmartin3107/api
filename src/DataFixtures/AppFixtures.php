@@ -2,6 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Cart;
+use App\Entity\Order;
+use App\Entity\Product;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -29,6 +32,24 @@ class AppFixtures extends Fixture
         $password = $this->encoder->hashPassword($user, 'aaaaa');
         $user->setPassword($password);
         $manager->persist($user);
+
+        $product = new Product();
+
+        $product
+            ->setName('some name')
+            ->setDescription('some description')
+            ->setPhoto('path/to/picture')
+            ->setPrice(3000);
+
+        $manager->persist($product);
+
+        $cart = new Cart();
+
+        $manager->persist($cart);
+        $order = new Order();
+
+        $manager->persist($order);
+
 
         $manager->flush();
     }

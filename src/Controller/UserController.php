@@ -4,16 +4,13 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\DBAL\Driver\Exception;
-use Doctrine\DBAL\Driver\Mysqli\Exception\StatementError;
-use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
-class RegistrationController extends ApiController
+class UserController extends ApiController
 {
     /**
      * @Route("/api/register", name="app_register", methods={"POST"})
@@ -53,5 +50,19 @@ class RegistrationController extends ApiController
         return $this->respondWithSuccess(sprintf('User %s successfully created', $user->getEmail()));
 
         return new Response($reports);
+    }
+    /**
+     * @Route("/api/users", name="app_user_show", methods={"GET"})
+     */
+    public function show(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator): Response
+    {
+        return new Response('users information');
+    }
+    /**
+     * @Route("/api/users", name="app_user_update", methods={"PUT"})
+     */
+    public function update(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator): Response
+    {
+        return new Response('users update');
     }
 }

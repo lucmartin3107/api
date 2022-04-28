@@ -33,7 +33,7 @@ class ApiKeyAuthenticator extends AbstractGuardAuthenticator
     public function getCredentials(Request $request)
     {
         $authorizationHeader = $request->headers->get('Authorization');
-        return substr($authorizationHeader, 7);
+        return $authorizationHeader;
     }
 
     public function supports(Request $request): ?bool

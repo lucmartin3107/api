@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
@@ -22,12 +21,6 @@ class Order
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Cart::class, cascade={"persist", "remove"})
-     * @Ignore()
-     */
-    private $cart;
 
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="ordr")
@@ -44,6 +37,12 @@ class Order
      */
     private $creationDate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="ordr")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -52,18 +51,6 @@ class Order
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCart(): ?Cart
-    {
-        return $this->cart;
-    }
-
-    public function setCart(?Cart $cart): self
-    {
-        $this->cart = $cart;
-
-        return $this;
     }
 
     /**
@@ -116,6 +103,18 @@ class Order
     public function setCreationDate(?\DateTimeInterface $creationDate): self
     {
         $this->creationDate = $creationDate;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

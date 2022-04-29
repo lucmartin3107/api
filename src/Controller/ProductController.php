@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Order;
 use App\Entity\Product;
-use App\Repository\CartRepository;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
+use App\Repository\UserRepository;
 use App\Security\ApiKeyAuthenticator;
+use App\Service\UserService;
 use Doctrine\DBAL\Driver\Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -123,63 +125,61 @@ class ProductController extends ApiController
     /**
      * @Route("/api/carts/validate", name="app_product_validate", methods={"PUT"})
      */
-    public function validate(OrderRepository $orderRepository, CartRepository $cartRepository): JsonResponse
+    public function validate(UserService $userService)
     {
-        $cart = $cartRepository->findOneFirst();
+        $order = new Order();
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $userService->getCurrentUser();
 
-        $order = $orderRepository->findOneFirst();
+        $order
+            ->setCreationDate(new \DateTime('now'))
+            ->setUser($user);
 
-        $order->setCreationDate(new \DateTime('now'));
-
-        foreach ($cart->getProduct() as $p) {
-            $order->addProducts($p);
-            $order->setTotalPrice($order->getTotalPrice() + $p->getPrice());
+        foreach ($user->getProducts() as $product) {
+            $product->setAvailable(false);
+            $entityManager->persist($product);
+            $order
+                ->setTotalPrice($order->getTotalPrice() + $product->getPrice())
+                ->addProducts($product);
         }
+        $entityManager->persist($order);
+        $entityManager->flush();
 
-        return $this->json($orderRepository->findOneFirst());
+
+        return $this->json('ok');
     }
 
     /**
      * @Route("/api/carts/{id}", name="app_product_add", methods={"PUT"})
      */
-    public function AddOrDeleteToCart(CartRepository $cartRepository, ProductRepository $productRepository, int $id): JsonResponse
+    public function AddOrDeleteToCart(ProductRepository $productRepository, UserService $userService, int $id): JsonResponse
     {
-        $cart = $cartRepository->findOneFirst();
-
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $product = $cartRepository->findOneByIdJoinedToCategory($id);
-
-        if ($product) {
-          $cart->removeProduct($product);
-          $entityManager->persist($cart);
-          $entityManager->flush();
-
-          return $this->json('product ' . $product->getName() . ' deleted successfully to the shopping cart');
-        }
-
         $product = $productRepository->find(['id' => $id]);
+        $user = $userService->getCurrentUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $verb = '';
 
-        if (!$product) {
-            return $this->respondNotFound();
-        }
+        if ($product->getUsers()->contains($user)) {
+            $user->removeProduct($product);
+            $verb = 'delet';
+        } else {
+           $user->addProduct($product);
+           $verb = 'add';
+       }
 
-        $cart
-              ->addProduct($product);
-
-          $entityManager->persist($cart);
+          $entityManager->persist($user);
           $entityManager->flush();
 
-          return $this->json('product ' . $product->getName() . ' added successfully to the shopping cart');
+          return $this->json('product ' . $product->getName() . ' ' . $verb . 'ed successfully to the shopping cart');
     }
 
     /**
      * @Route("/api/carts", name="app_product_show", methods={"GET"})
      */
-    public function showCart(CartRepository $cartRepository, ApiKeyAuthenticator $authenticator): JsonResponse
+    public function showCart(UserService $userService): JsonResponse
     {
-        $cart = $cartRepository->findOneFirst();
+        $user = $userService->getCurrentUser();
 
-        return $this->json($cart);
+        return $this->json($user->getProducts());
     }
 }

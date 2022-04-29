@@ -48,8 +48,6 @@ class UserController extends ApiController
         $reports = $serializer->serialize($user, 'json');
 
         return $this->respondWithSuccess(sprintf('User %s successfully created', $user->getEmail()));
-
-        return new Response($reports);
     }
     /**
      * @Route("/api/users", name="app_user_show", methods={"GET"})

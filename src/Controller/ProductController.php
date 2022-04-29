@@ -44,7 +44,7 @@ class ProductController extends ApiController
     /**
      * @Route("/api/products", name="app_product_create", methods={"POST"})
      */
-    public function create(Request $request, ApiKeyAuthenticator $authenticator): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $request = $this->transformJsonBody($request);
         $entityManager = $this->getDoctrine()->getManager();
@@ -117,7 +117,6 @@ class ProductController extends ApiController
 
         $entityManager->remove($product);
         $entityManager->flush();
-
 
         return $this->json('product ' . $product->getName() . ' deleted successfully');
     }

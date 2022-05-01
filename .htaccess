@@ -1,7 +1,5 @@
 <VirtualHost *:80>
 
-ServerName server1
-
 DocumentRoot /var/www/app/public
 DirectoryIndex index.html /index.php
 

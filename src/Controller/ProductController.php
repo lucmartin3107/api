@@ -181,4 +181,30 @@ class ProductController extends ApiController
 
         return $this->json($user->getProducts());
     }
+
+    /**
+     * @Route("/api/orders", name="app_order_show", methods={"GET"})
+     */
+    public function showOrder(UserService $userService): JsonResponse
+    {
+        $user = $userService->getCurrentUser();
+
+        return $this->json($user->getOrdr());
+    }
+
+    /**
+     * @Route("/api/orders{id}", name="app_order_show_one", methods={"GET"})
+     */
+    public function showOneOrder(OrderRepository $orderRepository, UserService $userService, int $id): JsonResponse
+    {
+        $order = $orderRepository->find(['id' => $id]);
+
+        $user = $userService->getCurrentUser();
+
+        if (!$user->getOrdr()->contains($order)) {
+            return $this->respondUnauthorized();
+        }
+
+        return $this->json($user->getOrdr());
+    }
 }

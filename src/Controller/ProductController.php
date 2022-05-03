@@ -205,6 +205,6 @@ class ProductController extends ApiController
             return $this->respondUnauthorized();
         }
 
-        return $this->json($user->getOrdr());
+        return $this->json($order);
     }
 }

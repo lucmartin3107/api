@@ -40,6 +40,7 @@ class Order
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="ordr")
      * @ORM\JoinColumn(nullable=false)
+     * @Ignore()
      */
     private $user;
 

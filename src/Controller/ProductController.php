@@ -193,7 +193,7 @@ class ProductController extends ApiController
     }
 
     /**
-     * @Route("/api/orders{id}", name="app_order_show_one", methods={"GET"})
+     * @Route("/api/orders/{id}", name="app_order_show_one", methods={"GET"})
      */
     public function showOneOrder(OrderRepository $orderRepository, UserService $userService, int $id): JsonResponse
     {

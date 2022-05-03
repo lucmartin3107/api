@@ -52,9 +52,9 @@ class UserController extends ApiController
     /**
      * @Route("/api/users", name="app_user_show", methods={"GET"})
      */
-    public function show(Request $request, UserRepository $userRepository): JsonResponse
+    public function show(UserService $userService): JsonResponse
     {
-        return $this->json($userRepository->findAll());
+        return $this->json($userService->getCurrentUser());
     }
     /**
      * @Route("/api/users", name="app_user_update", methods={"PUT"})
